@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Loan Chatbot</title>
+  <style>
+    body {
+      background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    #chatbox {
+      width: 90%;
+      max-width: 600px;
+      height: 400px;
+      border: 1px solid #ccc;
+      background: #fff;
+      overflow-y: scroll;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .user-msg {
+      color: blue;
+      margin: 5px 0;
+    }
+
+    .bot-msg {
+      color: green;
+      margin: 5px 0;
+    }
+
+    #userInput {
+      width: 80%;
+      padding: 10px;
+      font-size: 1em;
+    }
+
+    #sendBtn {
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #sendBtn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Loan Chatbot</h1>
+  <div id="chatbox"></div>
+  <input type="text" id="userInput" placeholder="Ask something about loans..." />
+  <button id="sendBtn">Send</button>
+
+  <script>
+    const chatbox = document.getElementById('chatbox');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    sendBtn.addEventListener('click', () => {
+      const userText = userInput.value;
+      if (userText.trim() === '') return;
+
+      chatbox.innerHTML += `<div class="user-msg"><strong>You:</strong> ${userText}</div>`;
+      userInput.value = '';
+
+      fetch('http://localhost:8501/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userText })
+      })
+      .then(response => response.json())
+      .then(data => {
+        chatbox.innerHTML += `<div class="bot-msg"><strong>Bot:</strong> ${data.reply}</div>`;
+        chatbox.scrollTop = chatbox.scrollHeight;
+      })
+      .catch(error => {
+        chatbox.innerHTML += `<div class="bot-msg">Error connecting to chatbot.</div>`;
+      });
+    });
+  </script>
+</body>
+</html>
